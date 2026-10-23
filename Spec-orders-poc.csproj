@@ -24,6 +24,8 @@
     <Content Include=".specify\memory\.constitution-template.json" />
     <Content Include=".specify\workflows\workflow-registry.json" />
     <Content Include=".vscode\mcp.json" />
+    <Content Include="client\src\app\app.component.html" />
+    <Content Include="client\src\app\order-history\order-history.component.html" />
     <Content Include="here\.specify\init-options.json" />
     <Content Include="here\.specify\integration.json" />
     <Content Include="here\.specify\integrations\copilot.manifest.json" />
@@ -47,6 +49,7 @@
     <None Include=".github\skills\speckit-specify\SKILL.md" />
     <None Include=".github\skills\speckit-taskstoissues\SKILL.md" />
     <None Include=".github\skills\speckit-tasks\SKILL.md" />
+    <None Include=".github\workflows\ci.yml" />
     <None Include=".specify\.gitignore" />
     <None Include=".specify\memory\constitution.md" />
     <None Include=".specify\scripts\powershell\check-prerequisites.ps1" />
@@ -61,6 +64,8 @@
     <None Include=".specify\templates\spec-template.md" />
     <None Include=".specify\templates\tasks-template.md" />
     <None Include=".specify\workflows\speckit\workflow.yml" />
+    <None Include="client\src\app\app.component.scss" />
+    <None Include="client\src\app\order-history\order-history.component.scss" />
     <None Include="here\.github\skills\speckit-analyze\SKILL.md" />
     <None Include="here\.github\skills\speckit-checklist\SKILL.md" />
     <None Include="here\.github\skills\speckit-clarify\SKILL.md" />
@@ -106,8 +111,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="client\src\app\app.component.spec.ts" />
+    <TypeScriptCompile Include="client\src\app\app.component.ts" />
+    <TypeScriptCompile Include="client\src\app\auth\support-role.guard.spec.ts" />
+    <TypeScriptCompile Include="client\src\app\auth\support-role.guard.ts" />
+    <TypeScriptCompile Include="client\src\app\order-history\order-history.component.spec.ts" />
+    <TypeScriptCompile Include="client\src\app\order-history\order-history.component.ts" />
     <TypeScriptCompile Include="client\src\app\order-history\order-history.models.ts" />
+    <TypeScriptCompile Include="client\src\app\order-history\order-history.service.spec.ts" />
+    <TypeScriptCompile Include="client\src\app\order-history\order-history.service.ts" />
     <TypeScriptCompile Include="client\src\environments\environment.ts" />
+    <TypeScriptCompile Include="client\src\main.new.ts" />
   </ItemGroup>
 
 </Project>

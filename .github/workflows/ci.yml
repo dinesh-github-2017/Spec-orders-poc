@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  api:
+    name: API build and tests
+    # The integration tests use SQL Server LocalDB, which is only available on Windows.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Start LocalDB
+        shell: pwsh
+        run: |
+          sqllocaldb info
+          sqllocaldb start MSSQLLocalDB
+
+      - name: Restore
+        run: dotnet restore Spec-orders-poc.sln
+
+      - name: Build
+        run: dotnet build Spec-orders-poc.sln --configuration Release --no-restore
+
+      - name: Test
+        run: >
+          dotnet test tests/Spec-orders-poc.Tests/Spec-orders-poc.Tests.csproj
+          --configuration Release --no-build
+          --collect:"XPlat Code Coverage"
+          --results-directory TestResults
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-coverage
+          path: TestResults/**/coverage.cobertura.xml
+          if-no-files-found: ignore
+
+  client:
+    name: Angular build and tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test -- --watch=false

@@ -44,13 +44,13 @@ description: "Task list for Customer Order History Search & CSV Export (ADO PBI 
 - [x] Schema received: customer/order table and column names, ID types (customer and order), status storage (string or code), currency column, existing indexes � **interim stand-in** `OrdersPoc` on LocalDB, see `db/db-schema.csv`; replace with real schema when supplied
 - [x] Connection string for development: `Server=(localdb)\MSSQLLocalDB;Database=OrdersPoc;Trusted_Connection=True;TrustServerCertificate=True` (staging value still needed)
 
-- [ ] T006 Create `OrderStatus` enum (`Pending`, `Shipped`, `Delivered`, `Cancelled`) and read-only entities `Customer` (CustomerId) and `Order` (OrderId, CustomerId, OrderDate UTC, Total decimal(18,2), Status) in `Orders/Entities.cs`
-- [ ] T007 Create `OrdersDbContext` in `Orders/OrdersDbContext.cs` mapping entities to existing tables (`ToTable`, column names, status value conversion), `QueryTrackingBehavior.NoTracking`, no migrations
-- [ ] T008 Register `OrdersDbContext` with `UseSqlServer(Configuration.GetConnectionString("Orders"))` in `Program.cs`
-- [ ] T009 Configure authentication in `Program.cs`: `AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"))`, add policy `"SupportOnly"` with `RequireRole("Support")`, and call `UseAuthentication()` / `UseAuthorization()` before `MapControllers()`
-- [ ] T010 [P] Create test infrastructure in `tests/Spec-orders-poc.Tests/Infrastructure/`: `TestAuthHandler.cs` (reads test header `X-Test-User: anonymous|user|support` to produce no identity / no role / `Support` role) and `OrdersApiFactory.cs` (`WebApplicationFactory<Program>` that swaps auth for `TestAuthHandler` and `OrdersDbContext` for a SQL Server test database (Testcontainers or LocalDB, so date/decimal behaviour matches production) seeded with customers C1 (45 orders over all statuses incl. one at 2026-05-31T23:59:00Z), C-EMPTY (0 orders), C-BIG (10,001 orders), C-10K (10,000 orders))
-- [ ] T011 [P] Configure MSAL in `client/src/app/app.config.ts` (`MsalModule`/providers, `MsalInterceptor` protecting `/api/*` with the API scope, `MsalGuard`) using values from `client/src/environments/environment.ts`
-- [ ] T012 [P] Create `client/src/app/order-history/order-history.models.ts` with `OrderStatus` union `'All'|'Pending'|'Shipped'|'Delivered'|'Cancelled'`, `OrderSummary { orderId; orderDate; total; status }`, `PagedOrders { items; page; pageSize; totalCount; totalPages }`, `OrderFilter { customerId; from?; to?; status }`
+- [x] T006 Create `OrderStatus` enum (`Pending`, `Shipped`, `Delivered`, `Cancelled`) and read-only entities `Customer` (CustomerId) and `Order` (OrderId, CustomerId, OrderDate UTC, Total decimal(18,2), Status) in `Orders/Entities.cs`
+- [x] T007 Create `OrdersDbContext` in `Orders/OrdersDbContext.cs` mapping entities to existing tables (`ToTable`, column names, status value conversion), `QueryTrackingBehavior.NoTracking`, no migrations
+- [x] T008 Register `OrdersDbContext` with `UseSqlServer(Configuration.GetConnectionString("Orders"))` in `Program.cs`
+- [x] T009 Configure authentication in `Program.cs`: `AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"))`, add policy `"SupportOnly"` with `RequireRole("Support")`, and call `UseAuthentication()` / `UseAuthorization()` before `MapControllers()`
+- [x] T010 [P] Create test infrastructure in `tests/Spec-orders-poc.Tests/Infrastructure/`: `TestAuthHandler.cs` (reads test header `X-Test-User: anonymous|user|support` to produce no identity / no role / `Support` role) and `OrdersApiFactory.cs` (`WebApplicationFactory<Program>` that swaps auth for `TestAuthHandler` and `OrdersDbContext` for a SQL Server test database (Testcontainers or LocalDB, so date/decimal behaviour matches production) seeded with customers C1 (45 orders over all statuses incl. one at 2026-05-31T23:59:00Z), C-EMPTY (0 orders), C-BIG (10,001 orders), C-10K (10,000 orders))
+- [x] T011 [P] Configure MSAL in `client/src/app/app.config.ts` (`MsalModule`/providers, `MsalInterceptor` protecting `/api/*` with the API scope, `MsalGuard`) using values from `client/src/environments/environment.ts`
+- [x] T012 [P] Create `client/src/app/order-history/order-history.models.ts` with `OrderStatus` union `'All'|'Pending'|'Shipped'|'Delivered'|'Cancelled'`, `OrderSummary { orderId; orderDate; total; status }`, `PagedOrders { items; page; pageSize; totalCount; totalPages }`, `OrderFilter { customerId; from?; to?; status }`
 
 **Checkpoint**: API boots with auth + DbContext; test factory works; Angular app signs in.
 
@@ -64,21 +64,21 @@ description: "Task list for Customer Order History Search & CSV Export (ADO PBI 
 
 ### Tests for User Story 1 (write first, ensure they fail)
 
-- [ ] T013 [P] [US1] Unit tests for `OrderQuery` validation in `tests/Spec-orders-poc.Tests/Unit/OrderQueryTests.cs`: customerId required; `from <= to` else invalid; status must be one of `All|Pending|Shipped|Delivered|Cancelled` (default `All`); page ?1 default 1
-- [ ] T014 [P] [US1] Unit tests for `OrderQueryService.SearchAsync` in `tests/Spec-orders-poc.Tests/Unit/OrderQueryServiceTests.cs`: inclusive UTC whole-day range (`>= from 00:00Z` and `< to+1 00:00Z`, includes 2026-05-31T23:59Z), from-only and to-only open-ended ranges, status filter, sort `OrderDate DESC, OrderId DESC`, page size 20, totalCount/totalPages, page beyond last ? empty items with correct totalCount
-- [ ] T015 [P] [US1] Integration tests in `tests/Spec-orders-poc.Tests/Integration/SearchOrdersTests.cs` for `GET /api/customers/{id}/orders` as Support user: C1 ? 20 items/3 pages; filters; C-EMPTY ? 200 with empty items; unknown customer ? 404 problem+json; `from > to` ? 400 problem+json
+- [x] T013 [P] [US1] Unit tests for `OrderQuery` validation in `tests/Spec-orders-poc.Tests/Unit/OrderQueryTests.cs`: customerId required; `from <= to` else invalid; status must be one of `All|Pending|Shipped|Delivered|Cancelled` (default `All`); page ?1 default 1
+- [x] T014 [P] [US1] Unit tests for `OrderQueryService.SearchAsync` in `tests/Spec-orders-poc.Tests/Unit/OrderQueryServiceTests.cs`: inclusive UTC whole-day range (`>= from 00:00Z` and `< to+1 00:00Z`, includes 2026-05-31T23:59Z), from-only and to-only open-ended ranges, status filter, sort `OrderDate DESC, OrderId DESC`, page size 20, totalCount/totalPages, page beyond last ? empty items with correct totalCount
+- [x] T015 [P] [US1] Integration tests in `tests/Spec-orders-poc.Tests/Integration/SearchOrdersTests.cs` for `GET /api/customers/{id}/orders` as Support user: C1 ? 20 items/3 pages; filters; C-EMPTY ? 200 with empty items; unknown customer ? 404 problem+json; `from > to` ? 400 problem+json
 - [ ] T016 [P] [US1] Angular service spec `client/src/app/order-history/order-history.service.spec.ts` (HttpTestingController): builds `/api/customers/{id}/orders?from&to&status&page`, omits empty params, maps response to `PagedOrders`
 - [ ] T017 [P] [US1] Angular component spec `client/src/app/order-history/order-history.component.spec.ts`: customer ID required (search disabled/flagged), renders rows (order ID, date, total, status), paging controls, "No orders found" when empty, "Customer not found" on 404
 
 ### Implementation for User Story 1
 
-- [ ] T018 [P] [US1] Create `OrderQuery` record + `Validate()` returning errors in `Orders/OrderQuery.cs` (fields: customerId, `DateOnly? From`, `DateOnly? To`, status string default `All`, page default 1; page size constant 20)
-- [ ] T019 [P] [US1] Create DTOs `OrderSummary` and `PagedResult<T>` in `Orders/Dtos.cs` matching `contracts/orders-api.openapi.yaml`
-- [ ] T020 [US1] Implement `OrderQueryService` in `Orders/OrderQueryService.cs`: `CustomerExistsAsync`, private `BuildQuery(OrderQuery)` (filters + sort), `SearchAsync` (Count + Skip/Take 20 projecting to `OrderSummary`); register as scoped in `Program.cs`
-- [ ] T021 [US1] Implement `CustomerOrdersController` in `Controllers/CustomerOrdersController.cs` with `[ApiController]`, route `api/customers/{id}/orders`, `GET` search action: 400 `ValidationProblem` on invalid query, 404 `Problem` for unknown customer, 200 `PagedResult<OrderSummary>`
-- [ ] T022 [US1] Implement `OrderHistoryService.search(filter, page)` in `client/src/app/order-history/order-history.service.ts`
-- [ ] T023 [US1] Implement `OrderHistoryComponent` in `client/src/app/order-history/order-history.component.ts|html|scss`: reactive form (customerId required, from, to, status select default All), results table, pager (20/page), "No orders found", "Customer not found", validation message for from > to
-- [ ] T024 [US1] Add route `order-history` ? `OrderHistoryComponent` with `MsalGuard` in `client/src/app/app.routes.ts`
+- [x] T018 [P] [US1] Create `OrderQuery` record + `Validate()` returning errors in `Orders/OrderQuery.cs` (fields: customerId, `DateOnly? From`, `DateOnly? To`, status string default `All`, page default 1; page size constant 20)
+- [x] T019 [P] [US1] Create DTOs `OrderSummary` and `PagedResult<T>` in `Orders/Dtos.cs` matching `contracts/orders-api.openapi.yaml`
+- [x] T020 [US1] Implement `OrderQueryService` in `Orders/OrderQueryService.cs`: `CustomerExistsAsync`, private `BuildQuery(OrderQuery)` (filters + sort), `SearchAsync` (Count + Skip/Take 20 projecting to `OrderSummary`); register as scoped in `Program.cs`
+- [x] T021 [US1] Implement `CustomerOrdersController` in `Controllers/CustomerOrdersController.cs` with `[ApiController]`, route `api/customers/{id}/orders`, `GET` search action: 400 `ValidationProblem` on invalid query, 404 `Problem` for unknown customer, 200 `PagedResult<OrderSummary>`
+- [x] T022 [US1] Implement `OrderHistoryService.search(filter, page)` in `client/src/app/order-history/order-history.service.ts`
+- [x] T023 [US1] Implement `OrderHistoryComponent` in `client/src/app/order-history/order-history.component.ts|html|scss`: reactive form (customerId required, from, to, status select default All), results table, pager (20/page), "No orders found", "Customer not found", validation message for from > to
+- [x] T024 [US1] Add route `order-history` ? `OrderHistoryComponent` with `MsalGuard` in `client/src/app/app.routes.ts`
 
 **Checkpoint**: Search works end-to-end for a signed-in user.
 

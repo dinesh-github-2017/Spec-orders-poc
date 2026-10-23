@@ -1,0 +1,82 @@
+<h1>Order History</h1>
+
+<form [formGroup]="form" (ngSubmit)="search()" class="filters">
+  <label>
+    Customer ID
+    <input formControlName="customerId" type="text" />
+  </label>
+  @if (form.controls.customerId.touched && form.controls.customerId.invalid) {
+    <span class="error" role="alert">Customer ID is required.</span>
+  }
+
+  <label>
+    From
+    <input formControlName="from" type="date" />
+  </label>
+
+  <label>
+    To
+    <input formControlName="to" type="date" />
+  </label>
+
+  <label>
+    Status
+    <select formControlName="status">
+      @for (s of statuses; track s) {
+        <option [value]="s">{{ s }}</option>
+      }
+    </select>
+  </label>
+
+  @if (form.hasError('dateRange')) {
+    <span class="error" role="alert">'From' date must be on or before 'To' date.</span>
+  }
+
+  <button type="submit" [disabled]="form.invalid || loading()">Search</button>
+  <button type="button" (click)="export()" [disabled]="form.invalid || exporting()">Export CSV</button>
+</form>
+
+@if (exportError()) {
+  <p class="error" role="alert">{{ exportError() }}</p>
+}
+
+@if (notFound()) {
+  <p class="error" role="alert">Customer not found.</p>
+}
+
+@if (error()) {
+  <p class="error" role="alert">{{ error() }}</p>
+}
+
+@if (result(); as r) {
+  @if (r.items.length === 0) {
+    <p>No orders found.</p>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Date</th>
+          <th>Total</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (o of r.items; track o.orderId) {
+          <tr>
+            <td>{{ o.orderId }}</td>
+            <td>{{ o.orderDate }}</td>
+            <td>{{ o.total }}</td>
+            <td>{{ o.status }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <nav class="pager" aria-label="Pagination">
+      <button type="button" (click)="goToPage(r.page - 1)" [disabled]="r.page <= 1 || loading()">Previous</button>
+      <span>Page {{ r.page }} of {{ r.totalPages }} ({{ r.totalCount }} orders)</span>
+      <button type="button" (click)="goToPage(r.page + 1)" [disabled]="r.page >= r.totalPages || loading()">Next</button>
+    </nav>
+  }
+}

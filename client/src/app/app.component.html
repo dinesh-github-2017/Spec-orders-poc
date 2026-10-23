@@ -1,0 +1,10 @@
+<nav class="main-nav">
+  <a routerLink="/">Home</a>
+  @if (isSupport()) {
+    <a routerLink="/order-history">Order History</a>
+  }
+</nav>
+
+<main>
+  <router-outlet />
+</main>

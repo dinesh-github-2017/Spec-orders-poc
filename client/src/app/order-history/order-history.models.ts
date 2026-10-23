@@ -1,7 +1,7 @@
 export type OrderStatus = 'All' | 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
 
 export interface OrderSummary {
-  orderId: number;
+  orderId: string;
   orderDate: string;
   total: number;
   status: Exclude<OrderStatus, 'All'>;

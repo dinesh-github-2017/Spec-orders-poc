@@ -11,6 +11,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<OrdersDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Orders")));
 
+builder.Services.AddScoped<OrderQueryService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
