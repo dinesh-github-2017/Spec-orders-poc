@@ -1,0 +1,9 @@
+﻿Table,Ordinal,Column,DataType,Length,Precision,Scale,Nullable,PrimaryKey,ForeignKey,Default,Check,Indexes
+Customers,1,CustomerId,nvarchar,20,NULL,NULL,NO,YES,,,,
+Customers,2,CustomerName,nvarchar,200,NULL,NULL,NO,,,,,
+Orders,1,OrderId,bigint,NULL,NULL,NULL,NO,YES,,,,
+Orders,2,CustomerId,nvarchar,20,NULL,NULL,NO,,Customers.CustomerId,,,IX_Orders_CustomerId_OrderDateUtc
+Orders,3,OrderDateUtc,datetime2,NULL,NULL,NULL,NO,,,,,IX_Orders_CustomerId_OrderDateUtc
+Orders,4,Total,decimal,NULL,18,2,NO,,,,,IX_Orders_CustomerId_OrderDateUtc
+Orders,5,Currency,char,3,NULL,NULL,NO,,,('USD'),,
+Orders,6,Status,nvarchar,20,NULL,NULL,NO,,,,([Status]='Cancelled' OR [Status]='Delivered' OR [Status]='Shipped' OR [Status]='Pending'),IX_Orders_CustomerId_OrderDateUtc

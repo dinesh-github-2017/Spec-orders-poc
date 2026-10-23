@@ -1,0 +1,17 @@
+
+client/node_modules/
+client/.angular/
+client/dist/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build output
+[Bb]in/
+[Oo]bj/
+TestResults/
+*.log
